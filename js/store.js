@@ -13,21 +13,9 @@ const Store = (() => {
   const KEY = 'makanwheel.v1';
   let memory = null; // fallback if storage is blocked
 
+  // New users start empty and add their own foods
   const defaults = () => ({
-    foods: [
-      ['Nasi lemak', ['breakfast', 'lunch']],
-      ['Roti canai', ['breakfast']],
-      ['Kaya toast & eggs', ['breakfast']],
-      ['Chee cheong fun', ['breakfast']],
-      ['Chicken rice', ['lunch', 'dinner']],
-      ['Char kuey teow', ['lunch', 'dinner']],
-      ['Mee goreng mamak', ['lunch', 'dinner']],
-      ['Wantan mee', ['breakfast', 'lunch']],
-      ['Laksa', ['lunch']],
-      ['Nasi kandar', ['lunch', 'dinner']],
-      ['Bak kut teh', ['dinner']],
-      ['Steamboat', ['dinner']],
-    ].map(([name, meals]) => ({ id: uid(), name, meals })),
+    foods: [], // [{ id, name: "Nasi lemak", meals: ["breakfast", "lunch"] }]
     records: {} // { "2026-10-24": { breakfast: "Roti canai", lunch: ..., dinner: ... } }
   });
 

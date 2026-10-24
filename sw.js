@@ -3,7 +3,7 @@
    Bump VERSION whenever you change any file below, so users
    get the new version next time they open the app.
    ============================================================ */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = 'makanwheel-' + VERSION;
 const FILES = [
   './',

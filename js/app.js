@@ -3,7 +3,7 @@
    ============================================================ */
 const hour = new Date().getHours();
 let currentMeal = hour < 11 ? 'breakfast' : hour < 16 ? 'lunch' : 'dinner';
-let newFoodMeals = ['lunch', 'dinner'];
+let newFoodMeals = []; // user picks the meals for each new food
 
 document.getElementById('todayLabel').textContent = prettyDate(todayKey());
 
