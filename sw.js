@@ -3,7 +3,7 @@
    Bump VERSION whenever you change any file below, so users
    get the new version next time they open the app.
    ============================================================ */
-const VERSION = 'v2';
+const VERSION = 'v3';
 const CACHE = 'makanwheel-' + VERSION;
 const FILES = [
   './',
@@ -19,8 +19,14 @@ const FILES = [
   'icons/icon-512.png',
 ];
 
+// cache: 'reload' skips the browser's HTTP cache, so a new VERSION
+// always stores the latest files instead of stale copies
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', e => {
