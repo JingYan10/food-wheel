@@ -17,6 +17,11 @@
   --danger: #C92A2A;
   --shadow: 0 4px 18px rgba(80, 40, 10, .07);
   --radius: 18px;
+  /* bottom nav */
+  --nav-bg: #EFEBE5;
+  --nav-line: #E3DCD3;
+  --nav-ink: #857468;
+  --nav-active: var(--accent);
 }
 /* 1. Original: the first version's warm cream */
 :root[data-theme="original"] {
@@ -25,6 +30,9 @@
   --muted: #8A7466;
   --line: #F0DFD0;
   --shadow: 0 6px 24px rgba(80, 40, 10, .10);
+  --nav-bg: #FCE6D2;
+  --nav-line: #F3D3B7;
+  --nav-ink: #9A6F52;
 }
 /* 3. Colourful: soft peach → pink → sky background, tinted chips */
 :root[data-theme="colorful"] {
@@ -35,6 +43,10 @@
   --accent: #F0532B;
   --muted: #8C6F7B;
   --shadow: 0 6px 22px rgba(190, 70, 120, .12);
+  --nav-bg: linear-gradient(90deg, #FFD8BF 0%, #FBCFE4 50%, #CFE0FF 100%);
+  --nav-line: rgba(255, 255, 255, .6);
+  --nav-ink: #8A5470;
+  --nav-active: #D9381E;
 }
 /* 4. Dark: Google / incognito style greys */
 :root[data-theme="dark"] {
@@ -48,6 +60,26 @@
   --accent: #FF8A3D;
   --accent-ink: #202124;
   --shadow: 0 4px 18px rgba(0, 0, 0, .35);
+  --nav-bg: #303134;
+  --nav-line: #3C4043;
+  --nav-ink: #9AA0A6;
+  --nav-active: #8AB4F8; /* Google blue */
+}
+/* 5. Warm: the first version's brown dark mode */
+:root[data-theme="warm"] {
+  color-scheme: dark;
+  --bg: #17110D;
+  --surface: #221A14;
+  --surface-2: #2D231B;
+  --text: #F7EDE4;
+  --muted: #B19C8C;
+  --line: #3A2E24;
+  --accent: #FF7A2E;
+  --shadow: 0 6px 24px rgba(0, 0, 0, .35);
+  --nav-bg: #2E2118;
+  --nav-line: #4A3628;
+  --nav-ink: #C2A58C;
+  --nav-active: #FFB066; /* amber */
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; }
@@ -62,15 +94,18 @@ body {
   display: flex; flex-direction: column;
   padding-bottom: calc(76px + env(safe-area-inset-bottom));
 }
-.theme-bar {
+.top-bar {
   padding: calc(10px + env(safe-area-inset-top)) 16px 0;
-  display: flex; justify-content: flex-end; align-items: center; gap: 8px;
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
   color: var(--muted); font-size: 13px;
 }
-.theme-bar select {
+.picker { display: flex; align-items: center; gap: 6px; }
+.picker svg { width: 18px; height: 18px; flex: none; }
+.picker select {
   border: 1px solid var(--line); background: var(--surface); color: var(--text);
-  border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer;
+  border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; max-width: 150px;
 }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 header {
   padding: 8px 20px 8px;
   display: flex; align-items: baseline; justify-content: space-between;
@@ -158,6 +193,7 @@ h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .8px; color: va
 .meal-line { display: flex; gap: 10px; font-size: 15px; padding: 2px 0; }
 .meal-line .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex: none; }
 .meal-line .lbl { color: var(--muted); width: 74px; flex: none; }
+:lang(ms) .meal-line .lbl { width: 8.6em; white-space: nowrap; } /* "Makan tengah hari" */
 .meal-line .none { color: var(--muted); font-style: italic; }
 .stats { display: flex; flex-wrap: wrap; gap: 8px; }
 .stat { background: var(--surface-2); border-radius: 12px; padding: 8px 12px; font-size: 14px; }
@@ -168,16 +204,16 @@ h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .8px; color: va
 /* Bottom nav */
 nav {
   position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: center;
-  background: var(--surface); border-top: 1px solid var(--line);
+  background: var(--nav-bg); border-top: 1px solid var(--nav-line);
   padding-bottom: env(safe-area-inset-bottom); z-index: 10;
 }
 nav .inner { width: 100%; max-width: 480px; display: grid; grid-template-columns: repeat(3, 1fr); }
 nav button {
-  background: none; border: none; color: var(--muted); font: 600 12px/1 inherit; padding: 10px 0 12px;
+  background: none; border: none; color: var(--nav-ink); font: 600 12px/1 inherit; padding: 10px 0 12px;
   display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
 }
 nav button svg { width: 24px; height: 24px; }
-nav button.active { color: var(--accent); }
+nav button.active { color: var(--nav-active); }
 
 /* Modal */
 .modal-bg {

@@ -5,7 +5,7 @@ function todayKey(d = new Date()) {
 }
 function prettyDate(key) {
   const [y, m, d] = key.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+  return new Date(y, m - 1, d).toLocaleDateString(LANG_LOCALE[LANG], { weekday: 'short', day: 'numeric', month: 'short' });
 }
 function esc(s) { return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function toast(msg) {

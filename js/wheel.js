@@ -90,7 +90,7 @@ function spin() {
 
 function showResult(food) {
   lastPick = food;
-  document.getElementById('resultMeal').textContent = MEAL_LABEL[currentMeal] + ' today is…';
+  document.getElementById('resultMeal').textContent = t('resultTitle', { meal: mealName(currentMeal) });
   document.getElementById('resultFood').textContent = food.name;
   document.getElementById('resultModal').classList.add('open');
   if (navigator.vibrate) navigator.vibrate(60);
@@ -104,7 +104,7 @@ document.getElementById('spinAgain').addEventListener('click', () => {
 document.getElementById('saveResult').addEventListener('click', () => {
   Store.recordMeal(todayKey(), currentMeal, lastPick.name);
   document.getElementById('resultModal').classList.remove('open');
-  toast(`Saved ${lastPick.name} for ${MEAL_LABEL[currentMeal].toLowerCase()}`);
+  toast(t('savedMeal', { food: lastPick.name, meal: mealName(currentMeal).toLowerCase() }));
   // move on to the next unrecorded meal
   const today = Store.day(todayKey());
   const next = MEALS.find(m => !today[m]);

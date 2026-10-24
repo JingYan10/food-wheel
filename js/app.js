@@ -5,13 +5,31 @@ const hour = new Date().getHours();
 let currentMeal = hour < 11 ? 'breakfast' : hour < 16 ? 'lunch' : 'dinner';
 let newFoodMeals = []; // user picks the meals for each new food
 
-document.getElementById('todayLabel').textContent = prettyDate(todayKey());
+/* ============================================================
+   LANGUAGE (saved per device)
+   ============================================================ */
+function currentView() {
+  return document.querySelector('.view.active').id.replace('view-', '');
+}
+function renderAll() {
+  applyI18n();
+  document.getElementById('todayLabel').textContent = prettyDate(todayKey());
+  const view = currentView();
+  if (view === 'spin') renderSpin();
+  if (view === 'foods') renderFoods();
+  if (view === 'history') renderHistory();
+}
+document.getElementById('langSelect').value = LANG;
+document.getElementById('langSelect').addEventListener('change', e => {
+  setLang(e.target.value);
+  renderAll();
+});
 
 /* ============================================================
    THEME (saved per device, applied early in index.html)
    ============================================================ */
 const THEME_KEY = 'makanwheel.theme';
-const THEME_BAR_COLOR = { original: '#E8590C', soft: '#E8590C', colorful: '#F0532B', dark: '#202124' };
+const THEME_BAR_COLOR = { original: '#E8590C', soft: '#E8590C', colorful: '#F0532B', dark: '#202124', warm: '#17110D' };
 function applyTheme(name) {
   if (!THEME_BAR_COLOR[name]) name = 'soft';
   document.documentElement.dataset.theme = name;
@@ -44,8 +62,8 @@ function renderSpin() {
   const today = Store.day(todayKey());
   document.getElementById('mealTabs').innerHTML = MEALS.map(m => `
     <button class="meal-tab ${m === currentMeal ? 'active' : ''}" data-meal="${m}">
-      ${MEAL_LABEL[m]}
-      <small>${today[m] ? '✓ ' + esc(today[m]) : 'not decided'}</small>
+      ${mealName(m)}
+      <small>${today[m] ? '✓ ' + esc(today[m]) : t('notDecided')}</small>
     </button>`).join('');
 
   wheelFoods = Store.foodsFor(currentMeal);
@@ -60,9 +78,9 @@ function renderSpin() {
 function mealLine(meal, food, clearable) {
   return `<div class="meal-line">
     <span class="dot" style="background:${MEAL_COLOR[meal]}"></span>
-    <span class="lbl">${MEAL_LABEL[meal]}</span>
+    <span class="lbl">${mealName(meal)}</span>
     <span style="flex:1">${food ? esc(food) : '<span class="none">—</span>'}</span>
-    ${clearable && food ? `<button class="icon-btn" title="Clear" data-clear="${meal}">×</button>` : ''}
+    ${clearable && food ? `<button class="icon-btn" title="${t('clear')}" data-clear="${meal}">×</button>` : ''}
   </div>`;
 }
 
@@ -84,13 +102,13 @@ document.getElementById('todayCard').addEventListener('click', e => {
    ============================================================ */
 function renderNewTags() {
   document.getElementById('newTags').innerHTML = MEALS.map(m =>
-    `<button type="button" class="tag ${newFoodMeals.includes(m) ? 'on' : ''}" data-meal="${m}">${MEAL_LABEL[m]}</button>`
+    `<button type="button" class="tag ${newFoodMeals.includes(m) ? 'on' : ''}" data-meal="${m}">${mealName(m)}</button>`
   ).join('');
 }
 document.getElementById('newTags').addEventListener('click', e => {
-  const t = e.target.closest('.tag');
-  if (!t) return;
-  const m = t.dataset.meal;
+  const tag = e.target.closest('.tag');
+  if (!tag) return;
+  const m = tag.dataset.meal;
   newFoodMeals = newFoodMeals.includes(m) ? newFoodMeals.filter(x => x !== m) : [...newFoodMeals, m];
   renderNewTags();
 });
@@ -99,24 +117,24 @@ document.getElementById('addForm').addEventListener('submit', e => {
   const input = document.getElementById('foodInput');
   const name = input.value.trim();
   if (!name) return input.focus();
-  if (!newFoodMeals.length) return toast('Pick at least one meal');
-  if (Store.foods().some(f => f.name.toLowerCase() === name.toLowerCase())) return toast('Already in your list');
+  if (!newFoodMeals.length) return toast(t('pickMeal'));
+  if (Store.foods().some(f => f.name.toLowerCase() === name.toLowerCase())) return toast(t('alreadyListed'));
   Store.addFood(name, [...newFoodMeals]);
   input.value = '';
-  toast(`Added ${name}`);
+  toast(t('added', { name }));
   renderFoods();
 });
 
 function renderFoods() {
   renderNewTags();
   const foods = Store.foods();
-  document.getElementById('foodCount').textContent = `Your foods (${foods.length})`;
+  document.getElementById('foodCount').textContent = t('yourFoods', { n: foods.length });
   document.getElementById('foodList').innerHTML = foods.length ? foods.map(f => `
     <li>
       <span class="food-name">${esc(f.name)}</span>
-      ${MEALS.map(m => `<button class="tag ${f.meals.includes(m) ? 'on' : ''}" data-meal="${m}" data-food="${f.id}">${MEAL_LABEL[m][0]}</button>`).join('')}
-      <button class="icon-btn" title="Delete" data-del="${f.id}">🗑</button>
-    </li>`).join('') : '<li class="hint">No foods yet. Add your first one above.</li>';
+      ${MEALS.map(m => `<button class="tag ${f.meals.includes(m) ? 'on' : ''}" data-meal="${m}" data-food="${f.id}" title="${mealName(m)}">${t(m + 'Short')}</button>`).join('')}
+      <button class="icon-btn" title="${t('delete')}" data-del="${f.id}">🗑</button>
+    </li>`).join('') : `<li class="hint">${t('noFoods')}</li>`;
 }
 document.getElementById('foodList').addEventListener('click', e => {
   const tag = e.target.closest('[data-food]');
@@ -137,13 +155,13 @@ function renderHistory() {
   const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
   document.getElementById('stats').innerHTML = top.length
     ? top.map(([f, c]) => `<span class="stat">${esc(f)} <b>×${c}</b></span>`).join('')
-    : '<span class="hint">Nothing recorded yet.</span>';
+    : `<span class="hint">${t('nothingYet')}</span>`;
 
   document.getElementById('historyList').innerHTML = dates.length ? dates.map(d => `
     <div class="day">
-      <div class="day-title">${prettyDate(d)} ${d === todayKey() ? '<small>Today</small>' : ''}</div>
+      <div class="day-title">${prettyDate(d)} ${d === todayKey() ? `<small>${t('today')}</small>` : ''}</div>
       ${MEALS.map(m => mealLine(m, recs[d][m], false)).join('')}
-    </div>`).join('') : '<p class="hint">Spin the wheel and save a meal to start your log.</p>';
+    </div>`).join('') : `<p class="hint">${t('logEmpty')}</p>`;
 }
 
 /* ============================================================
@@ -156,20 +174,20 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   a.download = `makan-wheel-backup-${todayKey()}.txt`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  toast('Backup saved');
+  toast(t('backupSaved'));
 });
 document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
 document.getElementById('importFile').addEventListener('change', async e => {
   const file = e.target.files[0];
   e.target.value = ''; // allow picking the same file again
   if (!file) return;
-  if (!confirm('Replace all foods and meal history on this device with this backup?')) return;
+  if (!confirm(t('confirmImport'))) return;
   try {
     const n = Store.importText(await file.text());
-    toast(`Restored ${n.foods} foods, ${n.days} days`);
+    toast(t('restored', n));
     renderHistory();
   } catch (err) {
-    toast("That file isn't a Makan Wheel backup");
+    toast(t('notBackup'));
   }
 });
 
@@ -196,6 +214,6 @@ installBtn.addEventListener('click', async () => {
   installPrompt = null;
   installBtn.hidden = true;
 });
-window.addEventListener('appinstalled', () => { installBtn.hidden = true; toast('Installed!'); });
+window.addEventListener('appinstalled', () => { installBtn.hidden = true; toast(t('installed')); });
 
-renderSpin();
+renderAll();

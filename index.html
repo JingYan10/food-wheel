@@ -19,14 +19,26 @@
 </head>
 <body>
 <div class="app">
-  <div class="theme-bar">
-    <label for="themeSelect">Theme</label>
-    <select id="themeSelect">
-      <option value="original">Original</option>
-      <option value="soft">Soft white</option>
-      <option value="colorful">Colourful</option>
-      <option value="dark">Dark</option>
-    </select>
+  <div class="top-bar">
+    <label class="picker">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+      <span class="sr-only" data-i18n="language">Language</span>
+      <select id="langSelect">
+        <option value="en">English</option>
+        <option value="ms">Bahasa Melayu</option>
+        <option value="zh">中文</option>
+      </select>
+    </label>
+    <label class="picker">
+      <span data-i18n="theme">Theme</span>
+      <select id="themeSelect">
+        <option value="original" data-i18n="themeOriginal">Original</option>
+        <option value="soft" data-i18n="themeSoft">Soft white</option>
+        <option value="colorful" data-i18n="themeColorful">Colourful</option>
+        <option value="dark" data-i18n="themeDark">Dark</option>
+        <option value="warm" data-i18n="themeWarm">Warm</option>
+      </select>
+    </label>
   </div>
   <header>
     <h1>Makan <span>Wheel</span></h1>
@@ -41,14 +53,14 @@
         <div class="wheel-wrap" id="wheelWrap">
           <div class="pointer"></div>
           <canvas id="wheel" width="720" height="720"></canvas>
-          <button class="hub" id="spinBtn">SPIN</button>
+          <button class="hub" id="spinBtn" data-i18n="spinBtn">SPIN</button>
         </div>
         <div class="empty-wheel" id="emptyWheel" hidden>
-          No foods for this meal yet.<br><br>
-          <button class="btn small" data-goto="foods">Add foods</button>
+          <span data-i18n="emptyWheel">No foods for this meal yet.</span><br><br>
+          <button class="btn small" data-goto="foods" data-i18n="addFoods">Add foods</button>
         </div>
       </div>
-      <h2>Today</h2>
+      <h2 data-i18n="today">Today</h2>
       <div class="card" id="todayCard"></div>
     </section>
 
@@ -56,11 +68,11 @@
     <section class="view" id="view-foods">
       <div class="card add-form">
         <form id="addForm" autocomplete="off">
-          <input type="text" id="foodInput" placeholder="e.g. Nasi lemak" maxlength="40">
+          <input type="text" id="foodInput" data-i18n-ph="foodPlaceholder" placeholder="e.g. Nasi lemak" maxlength="40">
           <div class="tag-picks" id="newTags"></div>
-          <button class="btn" type="submit">Add food</button>
+          <button class="btn" type="submit" data-i18n="addFood">Add food</button>
         </form>
-        <p class="hint">Tap the meal tags to choose which wheels a food appears on.</p>
+        <p class="hint" data-i18n="tagHint">Tap the meal tags to choose which wheels a food appears on.</p>
       </div>
       <h2 id="foodCount">Your foods</h2>
       <div class="card"><ul class="food-list" id="foodList"></ul></div>
@@ -68,20 +80,20 @@
 
     <!-- HISTORY -->
     <section class="view" id="view-history">
-      <h2>Most eaten</h2>
+      <h2 data-i18n="mostEaten">Most eaten</h2>
       <div class="card"><div class="stats" id="stats"></div></div>
-      <h2>Meal log</h2>
+      <h2 data-i18n="mealLog">Meal log</h2>
       <div class="card" id="historyList"></div>
 
-      <h2>Your data</h2>
+      <h2 data-i18n="yourData">Your data</h2>
       <div class="card">
-        <p class="hint data-note">Your foods and meal log are saved only on this device. Export a backup (.txt) to keep it safe, read it in Notepad or your notes app, or move it to another phone.</p>
+        <p class="hint data-note" data-i18n="dataNote">Your foods and meal log are saved only on this device.</p>
         <div class="row">
-          <button class="btn secondary" id="exportBtn">Export backup</button>
-          <button class="btn secondary" id="importBtn">Import backup</button>
+          <button class="btn secondary" id="exportBtn" data-i18n="exportBackup">Export backup</button>
+          <button class="btn secondary" id="importBtn" data-i18n="importBackup">Import backup</button>
         </div>
         <input type="file" id="importFile" accept=".txt,text/plain,.json,application/json" hidden>
-        <button class="btn install-btn" id="installBtn" hidden>Install app</button>
+        <button class="btn install-btn" id="installBtn" data-i18n="installApp" hidden>Install app</button>
       </div>
     </section>
   </main>
@@ -90,15 +102,15 @@
     <div class="inner">
       <button data-goto="spin" class="active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4M12 12 5.6 18.4M12 12H3"/></svg>
-        Spin
+        <span data-i18n="navSpin">Spin</span>
       </button>
       <button data-goto="foods">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-        Foods
+        <span data-i18n="navFoods">Foods</span>
       </button>
       <button data-goto="history">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>
-        History
+        <span data-i18n="navHistory">History</span>
       </button>
     </div>
   </nav>
@@ -106,17 +118,18 @@
 
 <div class="modal-bg" id="resultModal">
   <div class="modal">
-    <div class="eyebrow" id="resultMeal">Lunch</div>
+    <div class="eyebrow" id="resultMeal"></div>
     <div class="result" id="resultFood"></div>
     <div class="row">
-      <button class="btn" id="saveResult">Save as today's meal</button>
-      <button class="btn secondary" id="spinAgain">Spin again</button>
+      <button class="btn" id="saveResult" data-i18n="saveResult">Save as today's meal</button>
+      <button class="btn secondary" id="spinAgain" data-i18n="spinAgain">Spin again</button>
     </div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script src="js/utils.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/store.js"></script>
 <script src="js/wheel.js"></script>
 <script src="js/app.js"></script>

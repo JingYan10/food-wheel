@@ -14,12 +14,20 @@ MakanWheel/
 │   └── style.css   All styling, light + dark mode
 └── js/
     ├── utils.js    Helpers: dates, escaping, toast messages
+    ├── i18n.js     Translations (English, Malay, Chinese) + t() helper
     ├── store.js    Data layer: foods + meal records (localStorage for now)
     ├── wheel.js    Canvas wheel drawing, spin animation, result popup
     └── app.js      Navigation and rendering of Spin / Foods / History screens
 ```
 
-Scripts load in that order (utils → store → wheel → app) at the bottom of index.html.
+Scripts load in that order (utils → i18n → store → wheel → app) at the bottom of index.html.
+
+## Themes and languages
+
+The top bar has a language picker (English, Bahasa Melayu, 中文) and a theme picker
+(Original, Soft white, Colourful, Dark, Warm). Both are saved per device.
+Theme colours live in `css/style.css` under `:root[data-theme="..."]`.
+To add or change text, edit all three languages in `js/i18n.js`.
 
 ## Run it
 

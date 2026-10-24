@@ -3,7 +3,7 @@
    Bump VERSION whenever you change any file below, so users
    get the new version next time they open the app.
    ============================================================ */
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = 'makanwheel-' + VERSION;
 const FILES = [
   './',
@@ -11,6 +11,7 @@ const FILES = [
   'manifest.webmanifest',
   'css/style.css',
   'js/utils.js',
+  'js/i18n.js',
   'js/store.js',
   'js/wheel.js',
   'js/app.js',

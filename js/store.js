@@ -6,7 +6,6 @@
    touching the UI code.
    ============================================================ */
 const MEALS = ['breakfast', 'lunch', 'dinner'];
-const MEAL_LABEL = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner' };
 const MEAL_COLOR = { breakfast: 'var(--breakfast)', lunch: 'var(--lunch)', dinner: 'var(--dinner)' };
 
 const Store = (() => {
@@ -64,23 +63,24 @@ const Store = (() => {
 
     /* Backup: a plain .txt file people can read and edit in Notepad
        or a phone notes app, then import back on any device. */
+    // Written in the current language; importText reads any language
     exportText() {
       const lines = [
-        'MAKAN WHEEL BACKUP',
-        'Exported: ' + todayKey(),
+        t('bkTitle'),
+        `${t('bkExported')}: ${todayKey()}`,
         '',
-        'You can edit this file. Keep one item per line and the " | " separators.',
-        'Meals are: Breakfast, Lunch, Dinner',
+        t('bkHelp'),
+        `${t('bkMeals')}: ${MEALS.map(mealName).join(', ')}`,
         '',
-        '== FOODS ==',
-        '# Food name | meals',
-        ...data.foods.map(f => `${f.name} | ${f.meals.map(m => MEAL_LABEL[m]).join(', ')}`),
+        `== ${t('bkFoods')} ==`,
+        `# ${t('bkFoodsCols')}`,
+        ...data.foods.map(f => `${f.name} | ${f.meals.map(mealName).join(', ')}`),
         '',
-        '== MEAL LOG ==',
-        '# Date | meal | food',
+        `== ${t('bkLog')} ==`,
+        `# ${t('bkLogCols')}`,
       ];
       Object.keys(data.records).sort().forEach(date =>
-        MEALS.forEach(m => { if (data.records[date][m]) lines.push(`${date} | ${MEAL_LABEL[m]} | ${data.records[date][m]}`); })
+        MEALS.forEach(m => { if (data.records[date][m]) lines.push(`${date} | ${mealName(m)} | ${data.records[date][m]}`); })
       );
       return lines.join('\r\n') + '\r\n';
     },
@@ -91,13 +91,13 @@ const Store = (() => {
       let section = null;
       text.split(/\r?\n/).forEach(raw => {
         const line = raw.trim();
-        const head = line.match(/^==\s*(FOODS|MEAL LOG)\s*==$/i);
-        if (head) { section = head[1].toUpperCase(); return; }
+        const head = line.match(/^==\s*(.+?)\s*==$/);
+        if (head) { section = sectionOf(head[1]) || section; return; }
         if (!line || line.startsWith('#') || !section) return;
         const parts = line.split('|').map(s => s.trim());
         if (section === 'FOODS' && parts[0]) {
           if (foods.some(f => f.name.toLowerCase() === parts[0].toLowerCase())) return;
-          const meals = (parts[1] || '').split(',').map(toMeal).filter(Boolean);
+          const meals = (parts[1] || '').split(/[,，、]/).map(toMeal).filter(Boolean);
           foods.push({ id: uid(), name: cleanName(parts[0]), meals: [...new Set(meals)] });
         }
         if (section === 'MEAL LOG' && parts.length >= 3) {
@@ -115,8 +115,19 @@ const Store = (() => {
     save(data);
     return { foods: data.foods.length, days: Object.keys(data.records).length };
   }
+  // Accept meal and section names from any language's backup
+  function inAnyLang(key, s) {
+    return Object.values(I18N).some(d => d[key].toLowerCase() === s);
+  }
   function toMeal(label) {
-    return MEALS.find(m => m === String(label).trim().toLowerCase()) || null;
+    const s = String(label).trim().toLowerCase();
+    return MEALS.find(m => m === s || inAnyLang(m, s)) || null;
+  }
+  function sectionOf(title) {
+    const s = title.trim().toLowerCase();
+    if (inAnyLang('bkFoods', s)) return 'FOODS';
+    if (inAnyLang('bkLog', s)) return 'MEAL LOG';
+    return null;
   }
   // "|" separates fields in the backup file, so keep it out of names
   function cleanName(name) {
