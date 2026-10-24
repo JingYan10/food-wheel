@@ -38,7 +38,7 @@ const Store = (() => {
     foods: () => data.foods,
     foodsFor: meal => data.foods.filter(f => f.meals.includes(meal)),
     addFood(name, meals) {
-      data.foods.push({ id: uid(), name, meals }); save(data);
+      data.foods.push({ id: uid(), name: cleanName(name), meals }); save(data);
     },
     removeFood(id) {
       data.foods = data.foods.filter(f => f.id !== id); save(data);
@@ -62,30 +62,77 @@ const Store = (() => {
     day: date => data.records[date] || {},
     records: () => data.records,
 
-    /* Backup: plain JSON the user can save as a file and load on any device */
-    exportJSON() {
-      return JSON.stringify({ app: 'makanwheel', version: 1, exportedAt: new Date().toISOString(), ...data }, null, 2);
+    /* Backup: a plain .txt file people can read and edit in Notepad
+       or a phone notes app, then import back on any device. */
+    exportText() {
+      const lines = [
+        'MAKAN WHEEL BACKUP',
+        'Exported: ' + todayKey(),
+        '',
+        'You can edit this file. Keep one item per line and the " | " separators.',
+        'Meals are: Breakfast, Lunch, Dinner',
+        '',
+        '== FOODS ==',
+        '# Food name | meals',
+        ...data.foods.map(f => `${f.name} | ${f.meals.map(m => MEAL_LABEL[m]).join(', ')}`),
+        '',
+        '== MEAL LOG ==',
+        '# Date | meal | food',
+      ];
+      Object.keys(data.records).sort().forEach(date =>
+        MEALS.forEach(m => { if (data.records[date][m]) lines.push(`${date} | ${MEAL_LABEL[m]} | ${data.records[date][m]}`); })
+      );
+      return lines.join('\r\n') + '\r\n';
     },
-    importJSON(text) {
-      const obj = JSON.parse(text); // throws on bad JSON
-      if (!obj || !Array.isArray(obj.foods) || typeof obj.records !== 'object') throw new Error('Not a Makan Wheel backup');
-      const foods = obj.foods
-        .filter(f => f && typeof f.name === 'string' && f.name.trim())
-        .map(f => ({
-          id: typeof f.id === 'string' ? f.id : uid(),
-          name: f.name.trim().slice(0, 40),
-          meals: Array.isArray(f.meals) ? f.meals.filter(m => MEALS.includes(m)) : [],
-        }));
-      const records = {};
-      Object.entries(obj.records || {}).forEach(([date, day]) => {
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !day || typeof day !== 'object') return;
-        MEALS.forEach(m => {
-          if (typeof day[m] === 'string') (records[date] = records[date] || {})[m] = day[m];
-        });
+    importText(text) {
+      text = text.replace(/^﻿/, '').trim();
+      if (text.startsWith('{')) return replaceAll(fromJSON(text)); // older .json backups
+      const foods = [], records = {};
+      let section = null;
+      text.split(/\r?\n/).forEach(raw => {
+        const line = raw.trim();
+        const head = line.match(/^==\s*(FOODS|MEAL LOG)\s*==$/i);
+        if (head) { section = head[1].toUpperCase(); return; }
+        if (!line || line.startsWith('#') || !section) return;
+        const parts = line.split('|').map(s => s.trim());
+        if (section === 'FOODS' && parts[0]) {
+          if (foods.some(f => f.name.toLowerCase() === parts[0].toLowerCase())) return;
+          const meals = (parts[1] || '').split(',').map(toMeal).filter(Boolean);
+          foods.push({ id: uid(), name: cleanName(parts[0]), meals: [...new Set(meals)] });
+        }
+        if (section === 'MEAL LOG' && parts.length >= 3) {
+          const [date, meal, food] = [parts[0], toMeal(parts[1]), parts.slice(2).join(' | ')];
+          if (/^\d{4}-\d{2}-\d{2}$/.test(date) && meal && food) (records[date] = records[date] || {})[meal] = food;
+        }
       });
-      data = { foods, records };
-      save(data);
-      return { foods: foods.length, days: Object.keys(records).length };
+      if (section === null) throw new Error('Not a Makan Wheel backup');
+      return replaceAll({ foods, records });
     },
   };
+
+  function replaceAll(next) {
+    data = next;
+    save(data);
+    return { foods: data.foods.length, days: Object.keys(data.records).length };
+  }
+  function toMeal(label) {
+    return MEALS.find(m => m === String(label).trim().toLowerCase()) || null;
+  }
+  // "|" separates fields in the backup file, so keep it out of names
+  function cleanName(name) {
+    return name.replace(/\|/g, '/').trim().slice(0, 40);
+  }
+  function fromJSON(text) {
+    const obj = JSON.parse(text);
+    if (!obj || !Array.isArray(obj.foods)) throw new Error('Not a Makan Wheel backup');
+    const foods = obj.foods
+      .filter(f => f && typeof f.name === 'string' && f.name.trim())
+      .map(f => ({ id: uid(), name: cleanName(f.name), meals: (f.meals || []).filter(m => MEALS.includes(m)) }));
+    const records = {};
+    Object.entries(obj.records || {}).forEach(([date, day]) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !day) return;
+      MEALS.forEach(m => { if (typeof day[m] === 'string') (records[date] = records[date] || {})[m] = day[m]; });
+    });
+    return { foods, records };
+  }
 })();

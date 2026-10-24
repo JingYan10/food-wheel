@@ -1,30 +1,20 @@
+/* Always light: soft off-white background, white cards */
 :root {
-  --bg: #FFF8F1;
+  color-scheme: light;
+  --bg: #F8F7F4;
   --surface: #FFFFFF;
-  --surface-2: #FDEFE2;
+  --surface-2: #F3EEE8;
   --text: #2B1D14;
-  --muted: #8A7466;
-  --line: #F0DFD0;
+  --muted: #857468;
+  --line: #ECE5DD;
   --accent: #E8590C;
   --accent-ink: #FFFFFF;
   --breakfast: #F59F00;
   --lunch: #2F9E44;
   --dinner: #5F3DC4;
   --danger: #C92A2A;
-  --shadow: 0 6px 24px rgba(80, 40, 10, .10);
+  --shadow: 0 4px 18px rgba(80, 40, 10, .07);
   --radius: 18px;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #17110D;
-    --surface: #221A14;
-    --surface-2: #2D231B;
-    --text: #F7EDE4;
-    --muted: #B19C8C;
-    --line: #3A2E24;
-    --accent: #FF7A2E;
-    --shadow: 0 6px 24px rgba(0, 0, 0, .35);
-  }
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; }

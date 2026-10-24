@@ -132,10 +132,10 @@ function renderHistory() {
    BACKUP: EXPORT / IMPORT
    ============================================================ */
 document.getElementById('exportBtn').addEventListener('click', () => {
-  const blob = new Blob([Store.exportJSON()], { type: 'application/json' });
+  const blob = new Blob(['﻿' + Store.exportText()], { type: 'text/plain;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `makan-wheel-backup-${todayKey()}.json`;
+  a.download = `makan-wheel-backup-${todayKey()}.txt`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   toast('Backup saved');
@@ -147,7 +147,7 @@ document.getElementById('importFile').addEventListener('change', async e => {
   if (!file) return;
   if (!confirm('Replace all foods and meal history on this device with this backup?')) return;
   try {
-    const n = Store.importJSON(await file.text());
+    const n = Store.importText(await file.text());
     toast(`Restored ${n.foods} foods, ${n.days} days`);
     renderHistory();
   } catch (err) {

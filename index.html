@@ -62,12 +62,12 @@
 
       <h2>Your data</h2>
       <div class="card">
-        <p class="hint data-note">Your foods and meal log are saved only on this device. Export a backup to keep it safe or move it to another phone.</p>
+        <p class="hint data-note">Your foods and meal log are saved only on this device. Export a backup (.txt) to keep it safe, read it in Notepad or your notes app, or move it to another phone.</p>
         <div class="row">
           <button class="btn secondary" id="exportBtn">Export backup</button>
           <button class="btn secondary" id="importBtn">Import backup</button>
         </div>
-        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <input type="file" id="importFile" accept=".txt,text/plain,.json,application/json" hidden>
         <button class="btn install-btn" id="installBtn" hidden>Install app</button>
       </div>
     </section>

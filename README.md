@@ -41,8 +41,16 @@ users will keep seeing the old cached version.
 ## User data
 
 Each user's foods and meal log are saved only on their own device (localStorage).
-History → **Your data** has **Export backup** (downloads a `.json` file) and
-**Import backup** (replaces this device's data with a backup file).
+History → **Your data** has **Export backup** (downloads a readable `.txt` file
+that opens in Notepad or a phone notes app) and **Import backup** (replaces this
+device's data with a backup file; older `.json` backups also work).
+
+```
+== FOODS ==
+Nasi lemak | Breakfast, Lunch
+== MEAL LOG ==
+2026-10-24 | Lunch | Laksa
+```
 
 ## Database later
 
