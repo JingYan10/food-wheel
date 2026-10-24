@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E8590C">
+<title>Makan Wheel</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Makan <span>Wheel</span></h1>
+    <div class="date" id="todayLabel"></div>
+  </header>
+
+  <main>
+    <!-- SPIN -->
+    <section class="view active" id="view-spin">
+      <div class="meal-tabs" id="mealTabs"></div>
+      <div class="card">
+        <div class="wheel-wrap" id="wheelWrap">
+          <div class="pointer"></div>
+          <canvas id="wheel" width="720" height="720"></canvas>
+          <button class="hub" id="spinBtn">SPIN</button>
+        </div>
+        <div class="empty-wheel" id="emptyWheel" hidden>
+          No foods for this meal yet.<br><br>
+          <button class="btn small" data-goto="foods">Add foods</button>
+        </div>
+      </div>
+      <h2>Today</h2>
+      <div class="card" id="todayCard"></div>
+    </section>
+
+    <!-- FOODS -->
+    <section class="view" id="view-foods">
+      <div class="card add-form">
+        <form id="addForm" autocomplete="off">
+          <input type="text" id="foodInput" placeholder="e.g. Nasi lemak" maxlength="40">
+          <div class="tag-picks" id="newTags"></div>
+          <button class="btn" type="submit">Add food</button>
+        </form>
+        <p class="hint">Tap the meal tags to choose which wheels a food appears on.</p>
+      </div>
+      <h2 id="foodCount">Your foods</h2>
+      <div class="card"><ul class="food-list" id="foodList"></ul></div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="view" id="view-history">
+      <h2>Most eaten</h2>
+      <div class="card"><div class="stats" id="stats"></div></div>
+      <h2>Meal log</h2>
+      <div class="card" id="historyList"></div>
+    </section>
+  </main>
+
+  <nav>
+    <div class="inner">
+      <button data-goto="spin" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4M12 12 5.6 18.4M12 12H3"/></svg>
+        Spin
+      </button>
+      <button data-goto="foods">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        Foods
+      </button>
+      <button data-goto="history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>
+        History
+      </button>
+    </div>
+  </nav>
+</div>
+
+<div class="modal-bg" id="resultModal">
+  <div class="modal">
+    <div class="eyebrow" id="resultMeal">Lunch</div>
+    <div class="result" id="resultFood"></div>
+    <div class="row">
+      <button class="btn" id="saveResult">Save as today's meal</button>
+      <button class="btn secondary" id="spinAgain">Spin again</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="js/utils.js"></script>
+<script src="js/store.js"></script>
+<script src="js/wheel.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
