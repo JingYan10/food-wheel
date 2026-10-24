@@ -128,4 +128,56 @@ function renderHistory() {
     </div>`).join('') : '<p class="hint">Spin the wheel and save a meal to start your log.</p>';
 }
 
+/* ============================================================
+   BACKUP: EXPORT / IMPORT
+   ============================================================ */
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const blob = new Blob([Store.exportJSON()], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `makan-wheel-backup-${todayKey()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('Backup saved');
+});
+document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  e.target.value = ''; // allow picking the same file again
+  if (!file) return;
+  if (!confirm('Replace all foods and meal history on this device with this backup?')) return;
+  try {
+    const n = Store.importJSON(await file.text());
+    toast(`Restored ${n.foods} foods, ${n.days} days`);
+    renderHistory();
+  } catch (err) {
+    toast("That file isn't a Makan Wheel backup");
+  }
+});
+
+/* ============================================================
+   PWA: OFFLINE + INSTALL
+   ============================================================ */
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js');
+}
+// Ask the browser not to clear our data when space runs low
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+
+let installPrompt = null;
+const installBtn = document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  installPrompt = e;
+  installBtn.hidden = false;
+});
+installBtn.addEventListener('click', async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  installBtn.hidden = true;
+});
+window.addEventListener('appinstalled', () => { installBtn.hidden = true; toast('Installed!'); });
+
 renderSpin();

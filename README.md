@@ -7,6 +7,9 @@ Spin a wheel to decide breakfast, lunch and dinner. Every day's meals are logged
 ```
 MakanWheel/
 ├── index.html      Page layout (3 screens + bottom nav + result popup)
+├── manifest.webmanifest  App name, icons, colours for "Install app"
+├── sw.js           Service worker: caches files so the app works offline
+├── icons/          App icons (SVG + 192/512 PNG)
 ├── css/
 │   └── style.css   All styling, light + dark mode
 └── js/
@@ -22,6 +25,24 @@ Scripts load in that order (utils → store → wheel → app) at the bottom of 
 
 Open `index.html` in a browser, or in VS Code install the **Live Server** extension,
 right-click `index.html` → **Open with Live Server** (auto-reloads on save).
+
+## Install + offline (PWA)
+
+Install and offline only work when the app is served over http(s), not from a
+double-clicked `index.html`. Live Server works for testing; to share it, publish
+with GitHub Pages (repo **Settings → Pages → Deploy from branch → main / root**).
+
+Users then open the link and choose **Install app** (Chrome/Edge/Android) or
+**Share → Add to Home Screen** (iPhone). After the first visit it works offline.
+
+**When you change any file:** bump `VERSION` in `sw.js` (e.g. `v1` → `v2`), or
+users will keep seeing the old cached version.
+
+## User data
+
+Each user's foods and meal log are saved only on their own device (localStorage).
+History → **Your data** has **Export backup** (downloads a `.json` file) and
+**Import backup** (replaces this device's data with a backup file).
 
 ## Database later
 

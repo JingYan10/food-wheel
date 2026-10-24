@@ -4,7 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#E8590C">
+<meta name="description" content="Spin a wheel to decide breakfast, lunch and dinner.">
 <title>Makan Wheel</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Makan Wheel">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -53,6 +59,17 @@
       <div class="card"><div class="stats" id="stats"></div></div>
       <h2>Meal log</h2>
       <div class="card" id="historyList"></div>
+
+      <h2>Your data</h2>
+      <div class="card">
+        <p class="hint data-note">Your foods and meal log are saved only on this device. Export a backup to keep it safe or move it to another phone.</p>
+        <div class="row">
+          <button class="btn secondary" id="exportBtn">Export backup</button>
+          <button class="btn secondary" id="importBtn">Import backup</button>
+        </div>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <button class="btn install-btn" id="installBtn" hidden>Install app</button>
+      </div>
     </section>
   </main>
 

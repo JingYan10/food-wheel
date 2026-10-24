@@ -130,6 +130,8 @@ h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .8px; color: va
 .stats { display: flex; flex-wrap: wrap; gap: 8px; }
 .stat { background: var(--surface-2); border-radius: 12px; padding: 8px 12px; font-size: 14px; }
 .stat b { color: var(--accent); }
+.data-note { margin: 0 0 12px; }
+.install-btn { margin-top: 10px; }
 
 /* Bottom nav */
 nav {

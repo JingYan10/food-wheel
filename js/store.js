@@ -1,8 +1,9 @@
 /* ============================================================
    DATA LAYER
-   Everything goes through Store. Right now it saves to the
-   browser (localStorage). Later, swap these methods for API
-   calls / SQLite without touching the UI code.
+   Everything goes through Store. Data is saved only on this
+   device (localStorage), so each user has their own copy.
+   Later, swap these methods for API calls / SQLite without
+   touching the UI code.
    ============================================================ */
 const MEALS = ['breakfast', 'lunch', 'dinner'];
 const MEAL_LABEL = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner' };
@@ -72,5 +73,31 @@ const Store = (() => {
     },
     day: date => data.records[date] || {},
     records: () => data.records,
+
+    /* Backup: plain JSON the user can save as a file and load on any device */
+    exportJSON() {
+      return JSON.stringify({ app: 'makanwheel', version: 1, exportedAt: new Date().toISOString(), ...data }, null, 2);
+    },
+    importJSON(text) {
+      const obj = JSON.parse(text); // throws on bad JSON
+      if (!obj || !Array.isArray(obj.foods) || typeof obj.records !== 'object') throw new Error('Not a Makan Wheel backup');
+      const foods = obj.foods
+        .filter(f => f && typeof f.name === 'string' && f.name.trim())
+        .map(f => ({
+          id: typeof f.id === 'string' ? f.id : uid(),
+          name: f.name.trim().slice(0, 40),
+          meals: Array.isArray(f.meals) ? f.meals.filter(m => MEALS.includes(m)) : [],
+        }));
+      const records = {};
+      Object.entries(obj.records || {}).forEach(([date, day]) => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !day || typeof day !== 'object') return;
+        MEALS.forEach(m => {
+          if (typeof day[m] === 'string') (records[date] = records[date] || {})[m] = day[m];
+        });
+      });
+      data = { foods, records };
+      save(data);
+      return { foods: foods.length, days: Object.keys(records).length };
+    },
   };
 })();
