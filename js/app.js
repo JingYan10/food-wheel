@@ -7,6 +7,24 @@ let newFoodMeals = []; // user picks the meals for each new food
 
 document.getElementById('todayLabel').textContent = prettyDate(todayKey());
 
+/* ============================================================
+   THEME (saved per device, applied early in index.html)
+   ============================================================ */
+const THEME_KEY = 'makanwheel.theme';
+const THEME_BAR_COLOR = { original: '#E8590C', soft: '#E8590C', colorful: '#F0532B', dark: '#202124' };
+function applyTheme(name) {
+  if (!THEME_BAR_COLOR[name]) name = 'soft';
+  document.documentElement.dataset.theme = name;
+  document.querySelector('meta[name="theme-color"]').content = THEME_BAR_COLOR[name];
+  document.getElementById('themeSelect').value = name;
+  return name;
+}
+applyTheme(document.documentElement.dataset.theme);
+document.getElementById('themeSelect').addEventListener('change', e => {
+  const name = applyTheme(e.target.value);
+  try { localStorage.setItem(THEME_KEY, name); } catch (err) {}
+});
+
 document.addEventListener('click', e => {
   const go = e.target.closest('[data-goto]');
   if (!go) return;

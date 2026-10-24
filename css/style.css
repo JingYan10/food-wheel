@@ -1,6 +1,8 @@
-/* Always light: soft off-white background, white cards */
+/* Themes: picked from the dropdown, set as <html data-theme="...">.
+   Default (no attribute / "soft") = soft off-white with white cards. */
 :root {
   color-scheme: light;
+  --page: var(--bg);
   --bg: #F8F7F4;
   --surface: #FFFFFF;
   --surface-2: #F3EEE8;
@@ -16,10 +18,41 @@
   --shadow: 0 4px 18px rgba(80, 40, 10, .07);
   --radius: 18px;
 }
+/* 1. Original: the first version's warm cream */
+:root[data-theme="original"] {
+  --bg: #FFF8F1;
+  --surface-2: #FDEFE2;
+  --muted: #8A7466;
+  --line: #F0DFD0;
+  --shadow: 0 6px 24px rgba(80, 40, 10, .10);
+}
+/* 3. Colourful: soft peach → pink → sky background, tinted chips */
+:root[data-theme="colorful"] {
+  --page: linear-gradient(165deg, #FFEBD9 0%, #FDE6F1 45%, #E3EEFF 100%) fixed;
+  --bg: #FFF4F7;
+  --surface-2: #FFE6D6;
+  --line: #F5D9E3;
+  --accent: #F0532B;
+  --muted: #8C6F7B;
+  --shadow: 0 6px 22px rgba(190, 70, 120, .12);
+}
+/* 4. Dark: Google / incognito style greys */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #202124;
+  --surface: #292A2D;
+  --surface-2: #35363A;
+  --text: #E8EAED;
+  --muted: #9AA0A6;
+  --line: #3C4043;
+  --accent: #FF8A3D;
+  --accent-ink: #202124;
+  --shadow: 0 4px 18px rgba(0, 0, 0, .35);
+}
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; }
 body {
-  background: var(--bg);
+  background: var(--page);
   color: var(--text);
   font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   display: flex; justify-content: center;
@@ -29,8 +62,17 @@ body {
   display: flex; flex-direction: column;
   padding-bottom: calc(76px + env(safe-area-inset-bottom));
 }
+.theme-bar {
+  padding: calc(10px + env(safe-area-inset-top)) 16px 0;
+  display: flex; justify-content: flex-end; align-items: center; gap: 8px;
+  color: var(--muted); font-size: 13px;
+}
+.theme-bar select {
+  border: 1px solid var(--line); background: var(--surface); color: var(--text);
+  border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer;
+}
 header {
-  padding: calc(18px + env(safe-area-inset-top)) 20px 8px;
+  padding: 8px 20px 8px;
   display: flex; align-items: baseline; justify-content: space-between;
 }
 header h1 { margin: 0; font-size: 26px; letter-spacing: -.5px; }
